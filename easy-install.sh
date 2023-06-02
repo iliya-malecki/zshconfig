@@ -8,7 +8,7 @@ yes | git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $custom
 yes | git clone https://github.com/zsh-users/zsh-autosuggestions $custom/plugins/zsh-autosuggestions
 if [ ! -d "$custom/plugins/tldr" ]; then
     mkdir "$custom/plugins/tldr"
-    curl -LJO https://github.com/dbrgn/tealdeer/releases/latest/download/completions_zsh -o "$custom/plugins/tldr/_tldr.zsh"
+    curl -LJO https://github.com/dbrgn/tealdeer/releases/latest/download/completions_zsh > "$custom/plugins/tldr/_tldr.zsh"
     echo -e 'fpath+="${0:h}"' > "$custom/plugins/tldr/tldr.plugin.zsh"
 fi
 cp -b --suffix=".pre-autoconfig" .zshrc .p10k.zsh $HOME
