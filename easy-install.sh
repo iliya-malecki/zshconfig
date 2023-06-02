@@ -1,5 +1,7 @@
 plugins=${ZSH_CUSTOM:-~/.oh-my-zsh/custom/plugins}
-
+apt install zsh
+chsh -s $(which zsh)
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone https://github.com/esc/conda-zsh-completion $plugins/conda-zsh-completion
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions $plugins/zsh-autosuggestions
