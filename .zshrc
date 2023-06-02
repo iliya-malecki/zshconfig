@@ -134,7 +134,7 @@ export PATH=$PATH:/usr/local/go/bin
 [[ ! -f "$HOME/.cargo/env" ]] || source "$HOME/.cargo/env"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-if [[ -f "~/.p10k.zsh" ]]; then
+if [[ -f "$HOME/.p10k.zsh" ]]; then
     echo no need for config
     source "$HOME/.p10k.zsh"
 else
