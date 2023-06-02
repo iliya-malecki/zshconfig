@@ -1,5 +1,5 @@
 apt install zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 custom=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $custom/themes/powerlevel10k
 git clone https://github.com/esc/conda-zsh-completion $custom/plugins/conda-zsh-completion
