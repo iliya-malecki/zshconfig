@@ -135,4 +135,6 @@ export PATH=$PATH:/usr/local/go/bin
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 print 'going to source ~/.p10k.zsh; press enter to continue'
-[[ ! -f "~/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
+if [[ -f "~/.p10k.zsh" ]]; then
+    source "$HOME/.p10k.zsh"
+done
