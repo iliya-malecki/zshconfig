@@ -79,10 +79,10 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    conda-zsh-completion
-    zsh-syntax-highlighting
-    zsh-autosuggestions
-    tldr # https://github.com/dbrgn/tealdeer
+    conda-zsh-completion     # https://github.com/conda-incubator/conda-zsh-completion
+    zsh-syntax-highlighting  # https://github.com/zsh-users/zsh-syntax-highlighting
+    zsh-autosuggestions      # https://github.com/zsh-users/zsh-autosuggestions
+    tldr                     # https://github.com/dbrgn/tealdeer
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -131,7 +131,7 @@ unset __conda_setup
 
 
 export PATH=$PATH:/usr/local/go/bin
-. "$HOME/.cargo/env"
+[[ ! -f "$HOME/.cargo/env"]] || source "$HOME/.cargo/env"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f "~/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
