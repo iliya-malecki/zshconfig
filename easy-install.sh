@@ -6,6 +6,9 @@ yes | git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $custom/t
 yes | git clone https://github.com/esc/conda-zsh-completion $custom/plugins/conda-zsh-completion
 yes | git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $custom/plugins/zsh-syntax-highlighting
 yes | git clone https://github.com/zsh-users/zsh-autosuggestions $custom/plugins/zsh-autosuggestions
+if ! command -v tldr >/dev/null; then
+    curl -LJO https://github.com/dbrgn/tealdeer/releases/latest/download/tealdeer-linux-x86_64-musl > "/usr/local/bin/tldr"
+fi
 if [ ! -d "$custom/plugins/tldr" ]; then
     mkdir "$custom/plugins/tldr"
     curl -LJO https://github.com/dbrgn/tealdeer/releases/latest/download/completions_zsh > "$custom/plugins/tldr/_tldr.zsh"
