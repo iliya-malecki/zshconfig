@@ -135,3 +135,22 @@ export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
+
+
+include_exit_code() {
+  last=$?
+  if [ $last -ne 0 ] && [ $_exit_code_hook_cocked = "true" ]; then
+    print "\e[1m\e[38;5;196m✘ $last\e[0m"
+    typeset -g _exit_code_hook_cocked=false
+  fi
+}
+
+preexec_hook() {
+  # this doesnt run on no-ops, hence we avoid clutter
+  typeset -g _exit_code_hook_cocked=true
+}
+
+
+autoload -Uz add-zsh-hook
+add-zsh-hook preexec preexec_hook
+add-zsh-hook precmd include_exit_code
