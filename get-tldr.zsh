@@ -21,7 +21,7 @@ else
     echo "Unsupported architecture: $machine_arch"
 fi
 
-echo "Chosen file: $chosen_file"
+echo "Installing $chosen_file to $bindir as tldr"
 
 curl -LJ https://github.com/dbrgn/tealdeer/releases/latest/download/$chosen_file > "$bindir/tldr"
 chmod +x "$bindir/tldr"
