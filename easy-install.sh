@@ -7,8 +7,15 @@ yes | git clone https://github.com/esc/conda-zsh-completion $custom/plugins/cond
 yes | git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $custom/plugins/zsh-syntax-highlighting
 yes | git clone https://github.com/zsh-users/zsh-autosuggestions $custom/plugins/zsh-autosuggestions
 if ! command -v tldr >/dev/null; then
-    curl -LJ https://github.com/dbrgn/tealdeer/releases/latest/download/tealdeer-linux-x86_64-musl > "/usr/local/bin/tldr"
-    chmod +x "/usr/local/bin/tldr"
+    echo installing tldr
+    if [ "$EUID" -eq 0 ]; then
+        bindir="/usr/local/bin"
+    else
+        bindir="$HOME/bin"
+        mkdir $bindir
+    fi
+    curl -LJ https://github.com/dbrgn/tealdeer/releases/latest/download/tealdeer-linux-x86_64-musl > "$bindir/tldr"
+    chmod +x "$bindir/tldr"
 fi
 if [ ! -d "$custom/plugins/tldr" ]; then
     mkdir "$custom/plugins/tldr"

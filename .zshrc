@@ -130,7 +130,7 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 [[ ! -f "$HOME/.cargo/env" ]] || source "$HOME/.cargo/env"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
