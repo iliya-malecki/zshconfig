@@ -139,7 +139,7 @@ export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 
 include_exit_code() {
   last=$?
-  if [ $last -ne 0 ] && [ $_exit_code_hook_cocked = "true" ]; then
+  if [ $last -ne 0 ] && [ ${_exit_code_hook_cocked:=false} = "true" ]; then
     print "\e[1m\e[38;5;196m✘ $last\e[0m"
     typeset -g _exit_code_hook_cocked=false
   fi
