@@ -54,7 +54,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -154,3 +154,8 @@ preexec_hook() {
 autoload -Uz add-zsh-hook
 add-zsh-hook preexec preexec_hook
 add-zsh-hook precmd include_exit_code
+
+alias py="python"
+codenew() {
+    mkdir $1 && code $1
+}
