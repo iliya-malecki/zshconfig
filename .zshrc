@@ -129,6 +129,11 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+# i dont enjoy global env discovery, that sounds like a disaster to me.
+if [[ ! -L "$HOME/.conda/environments.txt" ]]; then
+  rm $HOME/.conda/environments.txt
+  ln -s /dev/null $HOME/.conda/environments.txt
+fi
 
 export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 [[ ! -f "$HOME/.cargo/env" ]] || source "$HOME/.cargo/env"
@@ -136,7 +141,7 @@ export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
 
-
+# to add an exit code like this: ✘ 1
 include_exit_code() {
   last=$?
   if [ $last -ne 0 ] && [ ${_exit_code_hook_cocked:=false} = "true" ]; then
@@ -156,6 +161,10 @@ add-zsh-hook preexec preexec_hook
 add-zsh-hook precmd include_exit_code
 
 alias py="python"
+alias i="conda install"
+alias htop="htop -d5"
 codenew() {
     mkdir $1 && code $1
 }
+
+zstyle ':completion:*' completer _expand_alias _complete _ignored

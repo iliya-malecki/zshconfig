@@ -997,8 +997,19 @@
   # The default value of POWERLEVEL9K_ANACONDA_CONTENT_EXPANSION expands to $CONDA_PROMPT_MODIFIER
   # without the surrounding parentheses, or to the last path component of CONDA_PREFIX if the former
   # is empty.
-  typeset -g POWERLEVEL9K_ANACONDA_CONTENT_EXPANSION='%B%F{251}${${${${CONDA_PROMPT_MODIFIER#}% }%}:-${CONDA_PREFIX:t}}%f%b'
+  # This abomination however is designed with stacked_env in mind,
+  # it gets the last path component from the stacked list
+  function extract_last_path_elements {
+    local cleaned_input="${${1#\(}%\)}" # against things wrapped in ()
+    local paths=(${(s/,/)cleaned_input})
+    local last_path_elements=()
+    for path in $paths; do
+        last_path_elements+=(${path:t})
+    done
+    echo "${(j/:/)last_path_elements}"
+}
 
+  typeset -g POWERLEVEL9K_ANACONDA_CONTENT_EXPANSION='%B%F{251}(${$(extract_last_path_elements $CONDA_PROMPT_MODIFIER):-${CONDA_PREFIX:t}})%f%b'
   # Custom icon.
   # typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION='%B%Fconda%f%b'
   typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION=''
