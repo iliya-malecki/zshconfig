@@ -37,7 +37,10 @@
 
       - name: Install conda
         shell: |
-          sh -c "$(curl -fsSL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh)"
+          curl -fsSLo conda-installer.sh \
+            https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
+          sh conda-installer.sh -b -p "${HOME}/conda"
+          rm conda-installer.sh
         args:
           executable: /bin/bash
 
@@ -92,5 +95,7 @@
           dest: ~/.condarc
 
       - name: Conda init
-        shell: conda init zsh
+        shell: |
+          source "${HOME}/conda/etc/profile.d/conda.sh"
+          conda init zsh
 
