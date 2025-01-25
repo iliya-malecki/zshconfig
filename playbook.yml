@@ -1,0 +1,96 @@
+---
+- name: Setup Personal Environment
+  hosts: localhost
+  connection: local
+  tasks:
+    - block:
+      - name: Update and upgrade the system
+        become: true
+        apt:
+          update_cache: true
+          upgrade: dist
+
+      - name: Install essential packages
+        become: true
+        apt:
+          name:
+            - zsh
+            - git
+            - curl
+            - wget
+            - build-essential
+            - fzf
+          state: present
+
+      - name: Install Rust toolchain
+        shell: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        args:
+          executable: /bin/bash
+
+      - name: Cargo Install
+        shell: |
+          source $HOME/.cargo/env
+          cargo install tealdeer
+        args:
+          executable: /bin/bash
+
+      - name: Install conda
+        shell: |
+          sh -c "$(curl -fsSL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh)"
+        args:
+          executable: /bin/bash
+
+      - name: Change default shell to Zsh
+        become: true
+        user:
+          name: "{{ ansible_user }}"
+          shell: /usr/bin/zsh
+
+      - name: Install Oh-My-Zsh
+        shell: |
+          sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+        args:
+          executable: /bin/bash
+
+      - name: Install Powerlevel10k theme
+        shell: |
+          cd $ZSH/custom/themes
+          git clone --depth=1 https://github.com/romkatv/powerlevel10k.git
+        args:
+          executable: /bin/bash
+
+      - name: Install Zsh plugins
+        shell: |
+          cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+          git clone --depth=1 https://github.com/esc/conda-zsh-completion
+          git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git
+          git clone --depth=1 https://github.com/Aloxaf/fzf-tab
+          git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions
+        args:
+          executable: /bin/bash
+
+      - name: Configure additional completions
+        shell: |
+          curl https://raw.githubusercontent.com/tealdeer-rs/tealdeer/refs/heads/main/completion/zsh_tealdeer \
+            -o /home/user/.oh-my-zsh/custom/completions/_tldr \
+            --create-dirs
+
+      - name: Configure .zshrc
+        copy:
+          src: .zshrc
+          dest: ~/.zshrc
+
+      - name: Configure p10k
+        copy:
+          src: .p10k.zsh
+          dest: ~/.p10k.zsh
+
+      - name: Configure conda
+        copy:
+          src: .condarc
+          dest: ~/.condarc
+
+      - name: Conda init
+        shell: conda init zsh
+

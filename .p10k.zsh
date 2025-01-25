@@ -50,7 +50,7 @@
     status                  # exit code of the last command
     command_execution_time  # duration of the last command
     background_jobs         # presence of background jobs
-    direnv                  # direnv status (https://direnv.net/)
+    # direnv                  # direnv status (https://direnv.net/)
     # asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
     # virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
     # anaconda                # conda environment (https://conda.io/)
@@ -110,9 +110,11 @@
     newline
     # ip                    # ip address and bandwidth usage for a specified network interface
     # public_ip             # public IP address
-    proxy                 # system-wide http/https/ftp proxy
+    # proxy                 # system-wide http/https/ftp proxy
+    context
     # battery               # internal battery
-    wifi                  # wifi speed
+    # wifi                  # wifi speed
+    # user
     # example               # example user-defined segment (see prompt_example function below)
   )
 
@@ -829,14 +831,14 @@
   ######################################[ ram: free RAM ]#######################################
   # RAM color.
   typeset -g POWERLEVEL9K_RAM_FOREGROUND=0
-  typeset -g POWERLEVEL9K_RAM_BACKGROUND=71
+  typeset -g POWERLEVEL9K_RAM_BACKGROUND=2
   # Custom icon.
   # typeset -g POWERLEVEL9K_RAM_VISUAL_IDENTIFIER_EXPANSION='RAM'
 
   #####################################[ swap: used swap ]######################################
   # Swap color.
   typeset -g POWERLEVEL9K_SWAP_FOREGROUND=0
-  typeset -g POWERLEVEL9K_SWAP_BACKGROUND=71
+  typeset -g POWERLEVEL9K_SWAP_BACKGROUND=2
   # Custom icon.
   # typeset -g POWERLEVEL9K_SWAP_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
@@ -971,7 +973,7 @@
   #####################[ anaconda: conda environment (https://conda.io/) ]######################
   # Anaconda environment color. Overriden by styling in POWERLEVEL9K_ANACONDA_CONTENT_EXPANSION
   typeset -g POWERLEVEL9K_ANACONDA_FOREGROUND=251
-  typeset -g POWERLEVEL9K_ANACONDA_BACKGROUND=23
+  typeset -g POWERLEVEL9K_ANACONDA_BACKGROUND=002
 
   # Anaconda segment format. The following parameters are available within the expansion.
   #
@@ -999,17 +1001,22 @@
   # is empty.
   # This abomination however is designed with stacked_env in mind,
   # it gets the last path component from the stacked list
-  function extract_last_path_elements {
-    local cleaned_input="${${1#\(}%\)}" # against things wrapped in ()
-    local paths=(${(s/,/)cleaned_input})
-    local last_path_elements=()
-    for path in $paths; do
-        last_path_elements+=(${path:t})
-    done
-    echo "${(j/:/)last_path_elements}"
-}
+  function simplify_path {
+    setopt re_match_pcre
+    if [[ $1 =~ '\/[\w\/-]+' ]]; then
+      without_prefix=${MATCH#$PWD/}
+      if [[ $MATCH == $without_prefix ]]; then
+        echo $1
+      else
+        relative="./$without_prefix"
+        echo "${1/$MATCH/$relative}"
+      fi
+    else
+      echo $1
+    fi
+  }
 
-  typeset -g POWERLEVEL9K_ANACONDA_CONTENT_EXPANSION='%B%F{251}(${$(extract_last_path_elements $CONDA_PROMPT_MODIFIER):-${CONDA_PREFIX:t}})%f%b'
+  typeset -g POWERLEVEL9K_ANACONDA_CONTENT_EXPANSION='${$(simplify_path $CONDA_PROMPT_MODIFIER)}'
   # Custom icon.
   # typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION='%B%Fconda%f%b'
   typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION=''

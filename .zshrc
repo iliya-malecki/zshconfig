@@ -72,62 +72,32 @@ COMPLETION_WAITING_DOTS="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd)
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+
 plugins=(
     git
     conda-zsh-completion     # https://github.com/conda-incubator/conda-zsh-completion
-    zsh-syntax-highlighting  # https://github.com/zsh-users/zsh-syntax-highlighting
     zsh-autosuggestions      # https://github.com/zsh-users/zsh-autosuggestions
-    tldr                     # https://github.com/dbrgn/tealdeer
+    command-not-found
+    helm
+    fast-syntax-highlighting
+    fzf-tab
 )
 
 source $ZSH/oh-my-zsh.sh
 autoload -U compinit && compinit
 
-# User configuration
+zstyle ':completion:*' completer _expand_alias _complete _ignored
+source /usr/share/doc/fzf/examples/key-bindings.zsh
 
-# export MANPATH="/usr/local/man:$MANPATH"
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/iliia/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/iliia/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/iliia/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/iliia/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+[[ -d "$CONDA_PREFIX/envs" ]] && ls "$CONDA_PREFIX/envs" | grep -q "general" && conda activate general
 
 # i dont enjoy global env discovery, that sounds like a disaster to me.
 if [[ ! -L "$HOME/.conda/environments.txt" ]]; then
@@ -145,7 +115,7 @@ export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 include_exit_code() {
   last=$?
   if [ $last -ne 0 ] && [ ${_exit_code_hook_cocked:=false} = "true" ]; then
-    print "\e[1m\e[38;5;196m✘ $last\e[0m"
+    print "\e[1m\e[38;5;196m✘ $last \e[38;5;233mat $(date +'%y-%m-%d %H:%M:%S')\e[0m"
     typeset -g _exit_code_hook_cocked=false
   fi
 }
@@ -160,11 +130,45 @@ autoload -Uz add-zsh-hook
 add-zsh-hook preexec preexec_hook
 add-zsh-hook precmd include_exit_code
 
+######### ENV VARIABLES
+
+######### ALIASES
 alias py="python"
 alias i="conda install"
+alias iforge="conda install -c conda-forge"
 alias htop="htop -d5"
+alias dind="docker run --rm -it --privileged --name dind docker:dind /bin/ash"
+alias dive="docker run -it --rm  -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive"
+
+######### FUNCTIONS
 codenew() {
     mkdir $1 && code $1
 }
+rwc() {
+  find $1 -name '*.py' | xargs wc -l
+}
+load-env() {
+    echo
+    if [[ -f $1 ]]; then
+        command=${@:2}
+        vars=$(grep -v '^\s*#' "$1" | xargs)
+        eval "$vars $command"
+    else
+        echo "File $1 not found."
+    fi
+}
+switch() {
+    cmd=$(fc -lrn 1 | grep -m 1 -P "^code [~/].*/$1$")
+    if [ -z "$cmd" ]; then
+        echo "No matching command found."
+        return 1
+    fi
+    echo -e "Open \033[33m$cmd\033[0m? [Y/n]: "
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ || -z "$response" ]]; then
+        eval "$cmd"
+    else
+        return 1
+    fi
+}
 
-zstyle ':completion:*' completer _expand_alias _complete _ignored
