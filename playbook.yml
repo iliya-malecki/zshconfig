@@ -26,14 +26,14 @@
         shell: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         args:
-          executable: /bin/bash
+          executable: /usr/bin/zsh
 
       - name: Cargo Install
         shell: |
           source $HOME/.cargo/env
           cargo install tealdeer
         args:
-          executable: /bin/bash
+          executable: /usr/bin/zsh
 
       - name: Install conda
         shell: |
@@ -42,7 +42,7 @@
           sh conda-installer.sh -b -p "${HOME}/conda"
           rm conda-installer.sh
         args:
-          executable: /bin/bash
+          executable: /usr/bin/zsh
 
       - name: Change default shell to Zsh
         become: true
@@ -54,14 +54,14 @@
         shell: |
           sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
         args:
-          executable: /bin/bash
+          executable: /usr/bin/zsh
 
       - name: Install Powerlevel10k theme
         shell: |
           cd $ZSH/custom/themes
           git clone --depth=1 https://github.com/romkatv/powerlevel10k.git
         args:
-          executable: /bin/bash
+          executable: /usr/bin/zsh
 
       - name: Install Zsh plugins
         shell: |
@@ -71,7 +71,7 @@
           git clone --depth=1 https://github.com/Aloxaf/fzf-tab
           git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions
         args:
-          executable: /bin/bash
+          executable: usr/bin/zsh
 
       - name: Configure additional completions
         shell: |
@@ -99,4 +99,4 @@
           source "${HOME}/conda/etc/profile.d/conda.sh"
           conda init zsh
         args:
-          executable: /bin/bash
+          executable: /usr/bin/zsh
