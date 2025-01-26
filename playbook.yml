@@ -2,8 +2,9 @@
   hosts: localhost
   connection: local
   vars:
-    home_dir: /home/{{ ansible_user }}
-    zsh_custom: /home/{{ ansible_user }}/.oh-my-zsh/custom
+    home_dir: "/home/{{ ansible_user }}"
+    zsh_custom: "{{ home_dir }}/.oh-my-zsh/custom"
+    conda_dir: "{{ home_dir }}/conda"
   tasks:
     - block:
       - name: Update and upgrade the system
@@ -41,11 +42,11 @@
         shell: |
           curl -fsSLo conda-installer.sh \
             https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
-          sh conda-installer.sh -b -p "{{ home_dir }}/conda"
+          sh conda-installer.sh -b -p "{{ conda_dir }}"
           rm conda-installer.sh
         args:
           executable: /usr/bin/zsh
-          creates: "{{ home_dir }}/conda"
+          creates: "{{ conda_dir }}"
 
       - name: Change default shell to Zsh
         become: true
@@ -86,19 +87,10 @@
           creates: "{{ zsh_custom }}/completions/_tldr"
 
       - name: Configure .zshrc
-        register: copy_zshrc
-        copy:
-          src: .zshrc
+        template:
+          src: .zshrc.j2
           dest: ~/.zshrc
           backup: true
-
-      - name: Conda init
-        shell: |
-          source "${HOME}/conda/etc/profile.d/conda.sh"
-          conda init zsh
-        args:
-          executable: /usr/bin/zsh
-        when: copy_zshrc.changed
 
       - name: Configure p10k
         copy:
