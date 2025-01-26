@@ -23,7 +23,21 @@
             - wget
             - build-essential
             - fzf
+            - htop
+            - lm-sensors
+            - sqlite3
+            - postgresql-client
+            - p7zip-full
           state: present
+
+      - name: Install snaps (classic confinement)
+        become: true
+        community.general.snap:
+          classic: true
+          name:
+            - kubectl
+            - helm
+            - code
 
       - name: Install docker
         include_role:
