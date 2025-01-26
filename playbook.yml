@@ -42,6 +42,8 @@
       - name: Install docker
         include_role:
           name: geerlingguy.docker
+          apply:
+            become: true
         vars:
           docker_users:
             - "{{ ansible_user }}"
