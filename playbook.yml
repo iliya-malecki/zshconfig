@@ -73,7 +73,7 @@
           depth: 1
         with_items:
           - https://github.com/esc/conda-zsh-completion
-          - https://github.com/zdharma-continuum/fast-syntax-highlighting.git
+          - https://github.com/zdharma-continuum/fast-syntax-highlighting
           - https://github.com/Aloxaf/fzf-tab
           - https://github.com/zsh-users/zsh-autosuggestions
 
