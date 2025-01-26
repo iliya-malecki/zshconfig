@@ -29,7 +29,7 @@
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         args:
           executable: /usr/bin/zsh
-        creates: "{{ home_dir }}/.cargo"
+          creates: "{{ home_dir }}/.cargo"
 
       - name: Cargo Install
         community.general.cargo:
@@ -45,7 +45,7 @@
           rm conda-installer.sh
         args:
           executable: /usr/bin/zsh
-        creates: "{{ home_dir }}/conda"
+          creates: "{{ home_dir }}/conda"
 
       - name: Change default shell to Zsh
         become: true
@@ -58,17 +58,17 @@
           sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
         args:
           executable: /usr/bin/zsh
-        creates: "{{ home_dir }}/.oh-my-zsh"
+          creates: "{{ home_dir }}/.oh-my-zsh"
 
       - name: Install Powerlevel10k theme
-        ansible.builtin.git:
+        git:
           repo: https://github.com/romkatv/powerlevel10k.git
           dest: "{{ zsh_custom }}/themes/powerlevel10k"
           depth: 1
 
       - name: Install Zsh Plugins
-        ansible.builtin.git:
-          repo: {{ item }}
+        git:
+          repo: "{{ item }}"
           dest: "{{ zsh_custom }}/plugins/{{ item | basename }}"
           depth: 1
         with_items:
@@ -82,7 +82,8 @@
           curl https://raw.githubusercontent.com/tealdeer-rs/tealdeer/refs/heads/main/completion/zsh_tealdeer \
             -o /home/user/.oh-my-zsh/custom/completions/_tldr \
             --create-dirs
-        creates: "{{ zsh_custom }}/completions/_tldr"
+        args:
+          creates: "{{ zsh_custom }}/completions/_tldr"
 
       - name: Configure .zshrc
         copy:
