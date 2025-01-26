@@ -5,10 +5,6 @@
     home_dir: "/home/{{ ansible_user }}"
     zsh_custom: "{{ home_dir }}/.oh-my-zsh/custom"
     conda_dir: "{{ home_dir }}/conda"
-    docker_users:
-      - {{ ansible_user }}
-  roles:
-    - geerlingguy.docker
   tasks:
     - block:
       - name: Update and upgrade the system
@@ -28,6 +24,17 @@
             - build-essential
             - fzf
           state: present
+
+      - name: Install docker
+        include_role:
+          name: geerlingguy.docker
+        vars:
+          docker_users:
+            - "{{ ansible_user }}"
+
+      - name: Install minikube
+        include_role:
+          name: gantsign.minikube
 
       - name: Install Rust toolchain
         shell: |
