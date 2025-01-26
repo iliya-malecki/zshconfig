@@ -1,7 +1,9 @@
----
 - name: Setup Personal Environment
   hosts: localhost
   connection: local
+  vars:
+    home_dir: /home/{{ ansible_user }}
+    zsh_custom: /home/{{ ansible_user }}/.oh-my-zsh/custom
   tasks:
     - block:
       - name: Update and upgrade the system
@@ -27,22 +29,23 @@
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         args:
           executable: /usr/bin/zsh
+        creates: "{{ home_dir }}/.cargo"
 
       - name: Cargo Install
-        shell: |
-          source $HOME/.cargo/env
-          cargo install tealdeer
-        args:
-          executable: /usr/bin/zsh
+        community.general.cargo:
+          executable: "{{ home_dir }}/.cargo/bin/cargo"
+          name:
+            - tealdeer
 
       - name: Install conda
         shell: |
           curl -fsSLo conda-installer.sh \
             https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
-          sh conda-installer.sh -b -p "${HOME}/conda"
+          sh conda-installer.sh -b -p "{{ home_dir }}/conda"
           rm conda-installer.sh
         args:
           executable: /usr/bin/zsh
+        creates: "{{ home_dir }}/conda"
 
       - name: Change default shell to Zsh
         become: true
@@ -55,29 +58,31 @@
           sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
         args:
           executable: /usr/bin/zsh
+        creates: "{{ home_dir }}/.oh-my-zsh"
 
       - name: Install Powerlevel10k theme
-        shell: |
-          cd $ZSH/custom/themes
-          git clone --depth=1 https://github.com/romkatv/powerlevel10k.git
-        args:
-          executable: /usr/bin/zsh
+        ansible.builtin.git:
+          repo: https://github.com/romkatv/powerlevel10k.git
+          dest: "{{ zsh_custom }}/themes/powerlevel10k"
+          depth: 1
 
-      - name: Install Zsh plugins
-        shell: |
-          cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
-          git clone --depth=1 https://github.com/esc/conda-zsh-completion
-          git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git
-          git clone --depth=1 https://github.com/Aloxaf/fzf-tab
-          git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions
-        args:
-          executable: usr/bin/zsh
+      - name: Install Zsh Plugins
+        ansible.builtin.git:
+          repo: {{ item }}
+          dest: "{{ zsh_custom }}/plugins/{{ item | basename }}"
+          depth: 1
+        with_items:
+          - https://github.com/esc/conda-zsh-completion
+          - https://github.com/zdharma-continuum/fast-syntax-highlighting.git
+          - https://github.com/Aloxaf/fzf-tab
+          - https://github.com/zsh-users/zsh-autosuggestions
 
       - name: Configure additional completions
         shell: |
           curl https://raw.githubusercontent.com/tealdeer-rs/tealdeer/refs/heads/main/completion/zsh_tealdeer \
             -o /home/user/.oh-my-zsh/custom/completions/_tldr \
             --create-dirs
+        creates: "{{ zsh_custom }}/completions/_tldr"
 
       - name: Configure .zshrc
         copy:
@@ -100,3 +105,4 @@
           conda init zsh
         args:
           executable: /usr/bin/zsh
+        when: "'# >>> conda initialize >>>' not in lookup('file', '{{ home_dir }}/.zshrc')"
