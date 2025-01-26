@@ -86,9 +86,18 @@
           creates: "{{ zsh_custom }}/completions/_tldr"
 
       - name: Configure .zshrc
+        register: copy_zshrc
         copy:
           src: .zshrc
           dest: ~/.zshrc
+
+      - name: Conda init
+        shell: |
+          source "${HOME}/conda/etc/profile.d/conda.sh"
+          conda init zsh
+        args:
+          executable: /usr/bin/zsh
+        when: copy_zshrc.changed
 
       - name: Configure p10k
         copy:
@@ -99,11 +108,3 @@
         copy:
           src: .condarc
           dest: ~/.condarc
-
-      - name: Conda init
-        shell: |
-          source "${HOME}/conda/etc/profile.d/conda.sh"
-          conda init zsh
-        args:
-          executable: /usr/bin/zsh
-        when: "'# >>> conda initialize >>>' not in lookup('file', '{{ home_dir }}/.zshrc')"
