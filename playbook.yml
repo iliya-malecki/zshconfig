@@ -5,6 +5,10 @@
     home_dir: "/home/{{ ansible_user }}"
     zsh_custom: "{{ home_dir }}/.oh-my-zsh/custom"
     conda_dir: "{{ home_dir }}/conda"
+    docker_users:
+      - {{ ansible_user }}
+  roles:
+    - geerlingguy.docker
   tasks:
     - block:
       - name: Update and upgrade the system
