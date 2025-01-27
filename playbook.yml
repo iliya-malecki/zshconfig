@@ -29,6 +29,7 @@
             - postgresql-client
             - p7zip-full
             - pkg-config
+            - libssl-dev
           state: present
 
       - name: Install snaps (classic confinement)
