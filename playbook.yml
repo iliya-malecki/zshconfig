@@ -28,6 +28,7 @@
             - sqlite3
             - postgresql-client
             - p7zip-full
+            - pkg-config
           state: present
 
       - name: Install snaps (classic confinement)
@@ -62,8 +63,10 @@
       - name: Cargo Install
         community.general.cargo:
           executable: "{{ home_dir }}/.cargo/bin/cargo"
+          locked: true
           name:
             - tealdeer
+            - nu
 
       - name: Install conda
         shell: |
