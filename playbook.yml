@@ -139,10 +139,10 @@
         become: true
         shell: |
           cd /usr/share/fonts/truetype
-          wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Meslo.zip
-          unzip Meslo.zip -d ./meslo
-          rm Meslo.zip
+          wget https://github.com/vercel/geist-font/releases/download/1.4.01/GeistMono-1.4.01.zip
+          unzip GeistMono-1.4.01 -d ./geist-mono
+          rm GeistMono-1.4.01
           fc-cache -fv
         args:
           executable: /usr/bin/zsh
-          creates: /usr/share/fonts/truetype/meslo
+          creates: /usr/share/fonts/truetype/geist-mono
