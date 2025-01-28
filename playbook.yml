@@ -10,69 +10,63 @@
         - personal
         - server
       block:
-      - name: Update and upgrade the system
-        become: true
-        apt:
-          update_cache: true
-          upgrade: dist
-
-      - name: Install essential packages
-        become: true
-        apt:
-          name:
-            - zsh
-            - git
-            - curl
-            - wget
-            - build-essential
-            - fzf
-            - htop
-            - lm-sensors
-            - sqlite3
-            - postgresql-client
-            - p7zip-full
-            - pkg-config
-            - libssl-dev
-            - xclip
-          state: present
-
-      - name: Install snaps (classic confinement)
-        become: true
-        community.general.snap:
-          classic: true
-          name:
-            - kubectl
-            - helm
-
-      - name: Install docker
-        include_role:
-          name: geerlingguy.docker
-          apply:
-            become: true
-        vars:
-          docker_users:
-            - "{{ ansible_user }}"
-
+        - name: Update and upgrade the system
+          become: true
+          apt:
+            update_cache: true
+            upgrade: dist
+        - name: Install essential packages
+          become: true
+          apt:
+            name:
+              - zsh
+              - git
+              - curl
+              - wget
+              - build-essential
+              - fzf
+              - htop
+              - lm-sensors
+              - sqlite3
+              - postgresql-client
+              - p7zip-full
+              - pkg-config
+              - libssl-dev
+              - xclip
+            state: present
+        - name: Install snaps (classic confinement)
+          become: true
+          community.general.snap:
+            classic: true
+            name:
+              - kubectl
+              - helm
+        - name: Install docker
+          include_role:
+            name: geerlingguy.docker
+            apply:
+              become: true
+          vars:
+            docker_users:
+              - "{{ ansible_user }}"
     - name: Extended
       tags:
         - personal
         - server
       block:
-      - name: Install Rust toolchain
-        shell: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        args:
-          executable: /usr/bin/zsh
-          creates: "{{ home_dir }}/.cargo"
-
-      - name: Cargo Install
-        community.general.cargo:
-          executable: "{{ home_dir }}/.cargo/bin/cargo"
-          locked: true
-          name:
-            - tealdeer
-            - nu
-
+        - name: Install Rust toolchain
+          shell: |
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          args:
+            executable: /usr/bin/zsh
+            creates: "{{ home_dir }}/.cargo"
+        - name: Cargo Install
+          community.general.cargo:
+            executable: "{{ home_dir }}/.cargo/bin/cargo"
+            locked: true
+            name:
+              - tealdeer
+              - nu
     - name: Shell setup
       tags:
         - personal
@@ -80,58 +74,51 @@
       vars:
         zsh_custom: "{{ home_dir }}/.oh-my-zsh/custom"
       block:
-      - name: Change default shell to Zsh
-        become: true
-        user:
-          name: "{{ ansible_user }}"
-          shell: /usr/bin/zsh
-
-      - name: Install Oh-My-Zsh
-        shell: |
-          sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-        args:
-          executable: /usr/bin/zsh
-          creates: "{{ home_dir }}/.oh-my-zsh"
-
-      - name: Install Powerlevel10k theme
-        git:
-          repo: https://github.com/romkatv/powerlevel10k.git
-          dest: "{{ zsh_custom }}/themes/powerlevel10k"
-          depth: 1
-
-      - name: Install Zsh Plugins
-        git:
-          repo: "{{ item }}"
-          dest: "{{ zsh_custom }}/plugins/{{ item | basename }}"
-          depth: 1
-        with_items:
-          - https://github.com/esc/conda-zsh-completion
-          - https://github.com/zdharma-continuum/fast-syntax-highlighting
-          - https://github.com/Aloxaf/fzf-tab
-          - https://github.com/zsh-users/zsh-autosuggestions
-
-      - name: Configure additional completions
-        shell: |
-          curl https://raw.githubusercontent.com/tealdeer-rs/tealdeer/refs/heads/main/completion/zsh_tealdeer \
-            -o /home/user/.oh-my-zsh/custom/completions/_tldr \
-            --create-dirs
-        args:
-          creates: "{{ zsh_custom }}/completions/_tldr"
-
-      - name: Configure .zshrc
-        template:
-          src: .zshrc.j2
-          dest: "{{ home_dir }}/.zshrc"
-          backup: true
-        vars:
-          add_conda_config: "{{ 'conda' in ansible_run_tags or 'personal' in ansible_run_tags }}"
-
-      - name: Configure .p10k
-        copy:
-          src: .p10k.zsh
-          dest: "{{ home_dir }}/.p10k.zsh"
-          backup: true
-
+        - name: Change default shell to Zsh
+          become: true
+          user:
+            name: "{{ ansible_user }}"
+            shell: /usr/bin/zsh
+        - name: Install Oh-My-Zsh
+          shell: |
+            sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+          args:
+            executable: /usr/bin/zsh
+            creates: "{{ home_dir }}/.oh-my-zsh"
+        - name: Install Powerlevel10k theme
+          git:
+            repo: https://github.com/romkatv/powerlevel10k.git
+            dest: "{{ zsh_custom }}/themes/powerlevel10k"
+            depth: 1
+        - name: Install Zsh Plugins
+          git:
+            repo: "{{ item }}"
+            dest: "{{ zsh_custom }}/plugins/{{ item | basename }}"
+            depth: 1
+          with_items:
+            - https://github.com/esc/conda-zsh-completion
+            - https://github.com/zdharma-continuum/fast-syntax-highlighting
+            - https://github.com/Aloxaf/fzf-tab
+            - https://github.com/zsh-users/zsh-autosuggestions
+        - name: Configure additional completions
+          shell: |
+            curl https://raw.githubusercontent.com/tealdeer-rs/tealdeer/refs/heads/main/completion/zsh_tealdeer \
+              -o /home/user/.oh-my-zsh/custom/completions/_tldr \
+              --create-dirs
+          args:
+            creates: "{{ zsh_custom }}/completions/_tldr"
+        - name: Configure .zshrc
+          template:
+            src: .zshrc.j2
+            dest: "{{ home_dir }}/.zshrc"
+            backup: true
+          vars:
+            add_conda_config: "{{ 'conda' in ansible_run_tags or 'personal' in ansible_run_tags }}"
+        - name: Configure .p10k
+          copy:
+            src: .p10k.zsh
+            dest: "{{ home_dir }}/.p10k.zsh"
+            backup: true
     - name: Conda setup
       tags:
         - never
@@ -140,46 +127,42 @@
       vars:
         conda_dir: "{{ home_dir }}/conda"
       block:
-      - name: Install conda
-        shell: |
-          curl -fsSLo conda-installer.sh \
-            https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
-          sh conda-installer.sh -b -p "{{ conda_dir }}"
-          rm conda-installer.sh
-        args:
-          executable: /usr/bin/zsh
-          creates: "{{ conda_dir }}"
-
-      - name: Configure conda
-        copy:
-          src: .condarc
-          dest: "{{ home_dir }}/.condarc"
-          backup: true
-
+        - name: Install conda
+          shell: |
+            curl -fsSLo conda-installer.sh \
+              https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
+            sh conda-installer.sh -b -p "{{ conda_dir }}"
+            rm conda-installer.sh
+          args:
+            executable: /usr/bin/zsh
+            creates: "{{ conda_dir }}"
+        - name: Configure conda
+          copy:
+            src: .condarc
+            dest: "{{ home_dir }}/.condarc"
+            backup: true
     - name: Personal Computer setup
       tags:
         - never
         - personal
       block:
-      - name: PC installation - Install snaps (classic confinement)
-        become: true
-        community.general.snap:
-          classic: true
-          name:
-            - code
-
-      - name: Install minikube
-        include_role:
-          name: gantsign.minikube
-
-      - name: Install a Nerd Font
-        become: true
-        shell: |
-          cd /usr/share/fonts/truetype
-          wget https://github.com/vercel/geist-font/releases/download/1.4.01/GeistMono-1.4.01.zip
-          unzip GeistMono-1.4.01 -d ./geist-mono
-          rm GeistMono-1.4.01
-          fc-cache -fv
-        args:
-          executable: /usr/bin/zsh
-          creates: /usr/share/fonts/truetype/geist-mono
+        - name: PC installation - Install snaps (classic confinement)
+          become: true
+          community.general.snap:
+            classic: true
+            name:
+              - code
+        - name: Install minikube
+          include_role:
+            name: gantsign.minikube
+        - name: Install a Nerd Font
+          become: true
+          shell: |
+            cd /usr/share/fonts/truetype
+            wget https://github.com/vercel/geist-font/releases/download/1.4.01/GeistMono-1.4.01.zip
+            unzip GeistMono-1.4.01 -d ./geist-mono
+            rm GeistMono-1.4.01
+            fc-cache -fv
+          args:
+            executable: /usr/bin/zsh
+            creates: /usr/share/fonts/truetype/geist-mono
