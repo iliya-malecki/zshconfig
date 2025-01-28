@@ -120,7 +120,7 @@
       - name: Configure .zshrc
         template:
           src: .zshrc.j2
-          dest: "{{ ansible_user }}/.zshrc"
+          dest: "{{ home_dir }}/.zshrc"
           backup: true
         vars:
           add_conda_config: "{{ 'conda' in ansible_run_tags or 'personal' in ansible_run_tags }}"
@@ -128,7 +128,7 @@
       - name: Configure .p10k
         copy:
           src: .p10k.zsh
-          dest: "{{ ansible_user }}/.p10k.zsh"
+          dest: "{{ home_dir }}/.p10k.zsh"
           backup: true
 
     - name: Conda setup
@@ -152,7 +152,7 @@
       - name: Configure conda
         copy:
           src: .condarc
-          dest: "{{ ansible_user }}/.condarc"
+          dest: "{{ home_dir }}/.condarc"
           backup: true
 
     - name: Personal Computer setup
