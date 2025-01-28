@@ -3,10 +3,13 @@
   connection: local
   vars:
     home_dir: "/home/{{ ansible_user }}"
-    zsh_custom: "{{ home_dir }}/.oh-my-zsh/custom"
-    conda_dir: "{{ home_dir }}/conda"
   tasks:
-    - block:
+    - name: Essential
+      tags:
+        - essential
+        - personal
+        - server
+      block:
       - name: Update and upgrade the system
         become: true
         apt:
@@ -39,7 +42,6 @@
           name:
             - kubectl
             - helm
-            - code
 
       - name: Install docker
         include_role:
@@ -50,10 +52,11 @@
           docker_users:
             - "{{ ansible_user }}"
 
-      - name: Install minikube
-        include_role:
-          name: gantsign.minikube
-
+    - name: Extended
+      tags:
+        - personal
+        - server
+      block:
       - name: Install Rust toolchain
         shell: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -69,16 +72,13 @@
             - tealdeer
             - nu
 
-      - name: Install conda
-        shell: |
-          curl -fsSLo conda-installer.sh \
-            https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
-          sh conda-installer.sh -b -p "{{ conda_dir }}"
-          rm conda-installer.sh
-        args:
-          executable: /usr/bin/zsh
-          creates: "{{ conda_dir }}"
-
+    - name: Shell setup
+      tags:
+        - personal
+        - server
+      vars:
+        zsh_custom: "{{ home_dir }}/.oh-my-zsh/custom"
+      block:
       - name: Change default shell to Zsh
         become: true
         user:
@@ -122,18 +122,54 @@
           src: .zshrc.j2
           dest: "{{ ansible_user }}/.zshrc"
           backup: true
+        vars:
+          add_conda_config: "{{ 'conda' in ansible_run_tags or 'personal' in ansible_run_tags }}"
 
-      - name: Configure p10k
+      - name: Configure .p10k
         copy:
           src: .p10k.zsh
           dest: "{{ ansible_user }}/.p10k.zsh"
           backup: true
+
+    - name: Conda setup
+      tags:
+        - never
+        - personal
+        - conda
+      vars:
+        conda_dir: "{{ home_dir }}/conda"
+      block:
+      - name: Install conda
+        shell: |
+          curl -fsSLo conda-installer.sh \
+            https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh
+          sh conda-installer.sh -b -p "{{ conda_dir }}"
+          rm conda-installer.sh
+        args:
+          executable: /usr/bin/zsh
+          creates: "{{ conda_dir }}"
 
       - name: Configure conda
         copy:
           src: .condarc
           dest: "{{ ansible_user }}/.condarc"
           backup: true
+
+    - name: Personal Computer setup
+      tags:
+        - never
+        - personal
+      block:
+      - name: PC installation - Install snaps (classic confinement)
+        become: true
+        community.general.snap:
+          classic: true
+          name:
+            - code
+
+      - name: Install minikube
+        include_role:
+          name: gantsign.minikube
 
       - name: Install a Nerd Font
         become: true

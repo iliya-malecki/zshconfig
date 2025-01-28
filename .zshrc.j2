@@ -96,7 +96,7 @@ autoload -U compinit && compinit
 zstyle ':completion:*' completer _expand_alias _complete _ignored
 source /usr/share/doc/fzf/examples/key-bindings.zsh
 
-
+{% if add_conda_config %}
 # >>> conda initialize >>>
 __conda_setup="$('{{ conda_dir }}/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
@@ -119,6 +119,7 @@ if [[ ! -L "$HOME/.conda/environments.txt" ]]; then
   ln -s /dev/null $HOME/.conda/environments.txt
 fi
 
+{% endif %}
 export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 [[ ! -f "$HOME/.cargo/env" ]] || source "$HOME/.cargo/env"
 
