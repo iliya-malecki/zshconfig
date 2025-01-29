@@ -3,6 +3,7 @@
   connection: local
   vars:
     home_dir: "/home/{{ ansible_user }}"
+    conda_dir: "{{ home_dir }}/conda"
   tasks:
     - name: Essential
       tags:
@@ -124,8 +125,6 @@
         - never
         - personal
         - conda
-      vars:
-        conda_dir: "{{ home_dir }}/conda"
       block:
         - name: Install conda
           shell: |
