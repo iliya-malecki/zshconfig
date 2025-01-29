@@ -1,4 +1,4 @@
-- name: Setup Personal Environment
+- name: Setup Work Environment
   hosts: localhost
   connection: local
   vars:
