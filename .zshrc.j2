@@ -126,6 +126,7 @@ export PATH=$HOME/bin:$PATH:/usr/local/go/bin
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
 
+export PATH=$PATH:$HOME/.local/bin
 # to add an exit code like this: ✘ 1
 include_exit_code() {
   last=$?
@@ -146,6 +147,7 @@ add-zsh-hook preexec preexec_hook
 add-zsh-hook precmd include_exit_code
 
 ######### ENV VARIABLES
+export DOCKER_BUILDKIT=1
 
 ######### ALIASES
 alias py="python"
@@ -154,6 +156,8 @@ alias iforge="conda install -c conda-forge"
 alias htop="htop -d5"
 alias dind="docker run --rm -it --privileged --name dind docker:dind /bin/ash"
 alias dive="docker run -it --rm  -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive"
+alias mvd="mv ~/Downloads/"
+alias base="conda activate base"
 
 ######### FUNCTIONS
 codenew() {

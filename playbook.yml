@@ -33,7 +33,7 @@
               - p7zip-full
               - pkg-config
               - libssl-dev
-              - xclip
+              - wl-clipboard
             state: present
         - name: Install snaps (classic confinement)
           become: true
