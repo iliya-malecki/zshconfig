@@ -1,0 +1,6 @@
+[init]
+	defaultBranch = main
+[gpg]
+	format = ssh
+[alias]
+	personal = !git config user.email \"iliyamalecki@gmail.com\" && git config user.name \"Ilya Maleki\"

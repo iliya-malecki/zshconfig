@@ -166,3 +166,9 @@
           args:
             executable: /usr/bin/zsh
             creates: /usr/share/fonts/truetype/geist-mono
+        - name: Copy a global gitconfig
+          copy:
+            src: .gitconfig
+            dest: "{{ home_dir }}/.gitconfig"
+            backup: true
+
