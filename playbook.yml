@@ -34,6 +34,7 @@
               - pkg-config
               - libssl-dev
               - wl-clipboard
+              - ffmpeg
             state: present
         - name: Install snaps (classic confinement)
           become: true

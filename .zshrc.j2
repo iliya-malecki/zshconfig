@@ -158,6 +158,9 @@ alias dind="docker run --rm -it --privileged --name dind docker:dind /bin/ash"
 alias dive="docker run -it --rm  -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive"
 alias mvd="mv ~/Downloads/"
 alias base="conda activate base"
+alias caffeine="ffplay -f lavfi -i color=#111111:size=1920x1080 -loop 0 -fs"
+alias caffepipe="yt-dlp -o - UHKHPybcLuc | ffplay -fs -"
+alias caffegnome="yt-dlp -o - UUEbmFbwejM | ffplay -fs -"
 
 ######### FUNCTIONS
 codenew() {
@@ -190,4 +193,3 @@ switch() {
         return 1
     fi
 }
-
