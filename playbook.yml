@@ -102,13 +102,7 @@
             - https://github.com/zdharma-continuum/fast-syntax-highlighting
             - https://github.com/Aloxaf/fzf-tab
             - https://github.com/zsh-users/zsh-autosuggestions
-        - name: Configure additional completions
-          shell: |
-            curl https://raw.githubusercontent.com/tealdeer-rs/tealdeer/refs/heads/main/completion/zsh_tealdeer \
-              -o /home/user/.oh-my-zsh/custom/completions/_tldr \
-              --create-dirs
-          args:
-            creates: "{{ zsh_custom }}/completions/_tldr"
+            - https://github.com/jirutka/zsh-shift-select
         - name: Configure .zshrc
           template:
             src: .zshrc.j2

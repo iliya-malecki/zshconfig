@@ -88,7 +88,22 @@ plugins=(
     helm
     fast-syntax-highlighting
     fzf-tab
+    zsh-shift-select
 )
+
+bindkey '^H' backward-kill-word
+bindkey '^\' undo
+copy-to-clipboard() {
+  zle kill-region
+  wl-copy "$CUTBUFFER"
+}
+zle -N copy-to-clipboard
+bindkey '^[^X' copy-to-clipboard
+function exit-shell() {
+  exit 0
+}
+zle -N exit-shell
+bindkey '^Q' exit-shell
 
 source $ZSH/oh-my-zsh.sh
 autoload -U compinit && compinit
@@ -140,7 +155,6 @@ preexec_hook() {
   # this doesnt run on no-ops, hence we avoid clutter
   typeset -g _exit_code_hook_cocked=true
 }
-
 
 autoload -Uz add-zsh-hook
 add-zsh-hook preexec preexec_hook
